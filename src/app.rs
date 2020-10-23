@@ -165,6 +165,31 @@ impl App {
             window.set_keep_below(true);
         }
 
+        if let Some(gdk_x11_window) = gdk_window.dynamic_cast_ref::<gdkx11::X11Window>() {
+            println!("REEEEEEEEEEEEEEEEEEEEEEEEEEEE: {}", &gdk_x11_window.get_xid().to_string());
+            std::process::Command::new("xprop")
+                .args(
+                    [
+                        "-id",
+                        &gdk_x11_window.get_xid().to_string(),
+                        "-f",
+                        "_NET_WM_STRUT_PARTIAL",
+                        "32a",
+                        "-set",
+                        "_NET_WM_STRUT_PARTIAL",
+                        "0,50,50,0,0,0,0,0,0,2559,0,0",
+                    ]
+                    .iter(),
+                )
+                .spawn()
+                .unwrap()
+                .wait()
+                .unwrap();
+            println!("REEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+        }
+
+        gdk_window.show();
+
         let eww_window = EwwWindow {
             definition: window_def,
             gtk_window: window,
